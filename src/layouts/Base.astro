@@ -1,0 +1,77 @@
+---
+import '../styles/global.css';
+import { site } from '../site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+}
+
+const { title, description = site.description, image } = Astro.props;
+const pageTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.role}`;
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const nav = [
+  { href: '/works', label: 'Works' },
+  { href: '/about', label: 'About' },
+  { href: '/commissions', label: 'Commissions' },
+];
+const ogImage = image ? new URL(image, Astro.site).toString() : undefined;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta name="theme-color" content="#0f0d0b" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-header">
+      <a href="/" class="wordmark" aria-label={`${site.name}, home`}>{site.name}</a>
+      <nav aria-label="Main">
+        {
+          nav.map((item) => (
+            <a href={item.href} aria-current={path.startsWith(item.href) ? 'page' : undefined}>
+              {item.label}
+            </a>
+          ))
+        }
+      </nav>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div>
+          <p class="footer-name">{site.fullName}</p>
+          <p class="muted">{site.role} · {site.location}</p>
+        </div>
+        <div class="footer-links">
+          <a href={site.instagram} rel="noopener" target="_blank">Instagram</a>
+          {site.youtube && <a href={site.youtube} rel="noopener" target="_blank">YouTube</a>}
+          <a href="/commissions">Commission a work</a>
+        </div>
+      </div>
+      <p class="muted small">© {new Date().getFullYear()} {site.fullName}. All artwork images are the property of the artist.</p>
+    </footer>
+  </body>
+</html>

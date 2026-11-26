@@ -1,0 +1,212 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import WorkCard from '../components/WorkCard.astro';
+import { site } from '../site';
+import streetDetail from '../assets/works/street-detail.jpg';
+
+const works = (await getCollection('works', ({ data }) => data.featured)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+---
+
+<Base image="/media/hero-poster.jpg">
+  <section class="hero">
+    <div class="hero-text">
+      <p class="eyebrow">{site.role} · {site.location}</p>
+      <h1>Ayotisegun</h1>
+      <p class="lede">{site.tagline}</p>
+      <div class="actions">
+        <a class="button solid" href="/works">View the work</a>
+        <a class="button" href="/commissions">Commission a piece</a>
+      </div>
+    </div>
+    <figure class="hero-media">
+      <video
+        src="/media/hero.mp4"
+        poster="/media/hero-poster.jpg"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        aria-label="Slow pan across the textured surface of the painting Riders at Dusk"
+      ></video>
+      <figcaption class="muted small">Riders at Dusk, 2026 — detail</figcaption>
+    </figure>
+  </section>
+
+  <section class="section statement">
+    <div class="wrap">
+      <p class="eyebrow reveal">The practice</p>
+      <p class="big reveal">
+        Paint laid on thick with the knife, so every stroke <em>stands off the canvas</em> — people, horses
+        and streets built from light, colour and texture you can almost touch.
+      </p>
+    </div>
+  </section>
+
+  <section class="section works">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 class="reveal">Selected works</h2>
+        <a class="arrow-link" href="/works">All works <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="grid">
+        {works.map((work, i) => <div class={`cell cell-${i % 2}`}><WorkCard work={work} /></div>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="texture">
+    <Image
+      src={streetDetail}
+      alt="Close-up of an impasto street scene: thick ridges of orange, violet and cream paint with small figures walking beneath a building."
+      widths={[800, 1400, 2000]}
+      sizes="100vw"
+    />
+    <div class="texture-caption wrap">
+      <p class="eyebrow">Impasto</p>
+      <h2>Up close, the paint becomes landscape.</h2>
+    </div>
+  </section>
+
+  <section class="section cta">
+    <div class="wrap cta-inner reveal">
+      <p class="eyebrow">Open for commissions nationwide</p>
+      <h2>Have a moment worth painting?</h2>
+      <p class="muted">
+        Portraits, family scenes, places that matter to you, or a statement piece for a home, office or hotel.
+      </p>
+      <a class="button solid" href="/commissions">Start a commission</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 120px var(--gutter) 40px;
+    max-width: var(--max);
+    margin: 0 auto;
+    min-height: 100svh;
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .hero {
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: clamp(40px, 6vw, 96px);
+      padding-top: 110px;
+    }
+  }
+  .hero h1 {
+    font-size: clamp(64px, 13vw, 184px);
+    margin: 20px 0 28px;
+    letter-spacing: -0.03em;
+  }
+  .lede {
+    font-size: clamp(18px, 1.6vw, 21px);
+    max-width: 30ch;
+    color: #d8cfc3;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 36px;
+  }
+  .hero-media {
+    margin: 0;
+  }
+  .hero-media video {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    background: var(--bg-raised);
+  }
+  @media (min-width: 900px) {
+    .hero-media video {
+      max-height: calc(100svh - 170px);
+    }
+  }
+  .hero-media figcaption {
+    margin-top: 12px;
+  }
+
+  .statement .big {
+    font-family: var(--serif);
+    font-size: clamp(32px, 5vw, 68px);
+    line-height: 1.08;
+    max-width: 22ch;
+    margin-top: 24px;
+  }
+  .statement em {
+    color: var(--accent);
+  }
+
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 16px;
+    margin-bottom: clamp(36px, 5vw, 64px);
+  }
+  .section-head h2 {
+    font-size: clamp(42px, 6vw, 84px);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 72px;
+  }
+  @media (min-width: 900px) {
+    .grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 0 clamp(40px, 6vw, 96px);
+    }
+    .cell-1 {
+      margin-top: 180px;
+    }
+  }
+
+  .texture {
+    position: relative;
+  }
+  .texture :global(img) {
+    width: 100%;
+    height: clamp(420px, 80vh, 900px);
+    object-fit: cover;
+  }
+  .texture-caption {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding-bottom: clamp(32px, 6vw, 72px);
+    padding-top: 120px;
+    max-width: none;
+    background: linear-gradient(to top, rgba(15, 13, 11, 0.85), rgba(15, 13, 11, 0));
+  }
+  .texture-caption h2 {
+    font-size: clamp(36px, 6vw, 80px);
+    max-width: 16ch;
+    margin-top: 12px;
+  }
+
+  .cta-inner {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .cta h2 {
+    font-size: clamp(44px, 7vw, 100px);
+    margin: 16px 0 12px;
+  }
+  .cta .muted {
+    max-width: 46ch;
+    margin-bottom: 28px;
+  }
+</style>

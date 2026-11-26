@@ -1,0 +1,107 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import { site } from '../site';
+import portrait from '../assets/works/riders-dusk-2026-signature.jpg';
+---
+
+<Base title="About" description={site.description}>
+  <div class="wrap">
+    <header class="page-head">
+      <p class="eyebrow">About the artist</p>
+      <h1>{site.fullName}</h1>
+    </header>
+
+    <div class="about">
+      <div class="text">
+        <p class="intro">
+          Ayotisegun is an impasto painter whose textured layers and heavy brushwork bring emotion to life.
+        </p>
+        <p>
+          His journey began in secondary school, driven by a deep love of art that has only grown stronger over
+          the years. Working mainly with the palette knife, he builds paint up in thick, sculptural layers, so
+          that light catches every ridge and the surface becomes part of the story.
+        </p>
+        <p>
+          His canvases capture the beauty, innocence and stories of people, especially children, who inspire his
+          creativity and remind him of life's purest moments. Alongside them run busy city streets, riders and
+          horses, and the everyday rhythms of life in {site.location}.
+        </p>
+        <blockquote>
+          “{site.tagline}”
+        </blockquote>
+        <div class="links">
+          <a class="button" href={site.instagram} target="_blank" rel="noopener">Follow {site.instagramHandle}</a>
+          {
+            site.youtube && (
+              <a class="button" href={site.youtube} target="_blank" rel="noopener">
+                Watch the artist spotlight
+              </a>
+            )
+          }
+        </div>
+      </div>
+      <figure class="image">
+        <Image
+          src={portrait}
+          alt="Close-up of a finished canvas showing thick peach and violet paint and the signature Obajuluwa Segun 2026."
+          widths={[600, 1000]}
+          sizes="(min-width: 900px) 40vw, 100vw"
+        />
+        <figcaption class="muted small">The artist's signature on Riders at Dusk, 2026</figcaption>
+      </figure>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .about {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 56px;
+    padding-bottom: clamp(80px, 12vw, 160px);
+  }
+  @media (min-width: 900px) {
+    .about {
+      grid-template-columns: 1.2fr 1fr;
+      gap: clamp(56px, 8vw, 120px);
+      align-items: start;
+    }
+  }
+  .text {
+    color: #d8cfc3;
+    font-size: 17px;
+    max-width: 60ch;
+  }
+  .intro {
+    font-family: var(--serif);
+    font-size: clamp(28px, 3.2vw, 40px);
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: 1.2em;
+  }
+  blockquote {
+    margin: 48px 0;
+    padding-left: 24px;
+    border-left: 2px solid var(--accent);
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(24px, 2.6vw, 32px);
+    line-height: 1.2;
+    color: var(--text);
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .image {
+    margin: 0;
+  }
+  .image :global(img) {
+    width: 100%;
+  }
+  figcaption {
+    margin-top: 12px;
+  }
+</style>

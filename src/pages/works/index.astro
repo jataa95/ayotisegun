@@ -1,0 +1,41 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import WorkCard from '../../components/WorkCard.astro';
+
+const works = (await getCollection('works')).sort(
+  (a, b) => b.data.year - a.data.year || a.data.order - b.data.order,
+);
+---
+
+<Base title="Works" description="Impasto paintings by Ayotisegun: oil on canvas, built up with the palette knife.">
+  <div class="wrap">
+    <header class="page-head">
+      <p class="eyebrow">Paintings · {works.length} {works.length === 1 ? 'work' : 'works'}</p>
+      <h1>Works</h1>
+    </header>
+    <div class="grid">
+      {works.map((work, i) => <WorkCard work={work} eager={i < 2} />)}
+    </div>
+  </div>
+</Base>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 72px clamp(32px, 5vw, 72px);
+    padding-bottom: clamp(80px, 12vw, 160px);
+    align-items: start;
+  }
+  @media (min-width: 700px) {
+    .grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (min-width: 1200px) {
+    .grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

@@ -1,0 +1,182 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { site, statusLabel } from '../../site';
+
+export async function getStaticPaths() {
+  const works = (await getCollection('works')).sort((a, b) => a.data.order - b.data.order);
+  return works.map((work, i) => ({
+    params: { slug: work.id },
+    props: { work, next: works[(i + 1) % works.length] },
+  }));
+}
+
+interface Props {
+  work: CollectionEntry<'works'>;
+  next: CollectionEntry<'works'>;
+}
+
+const { work, next } = Astro.props;
+const { title, year, medium, dimensions, image, alt, details, status } = work.data;
+const { Content } = await render(work);
+const enquiry = `Hello, I'm interested in "${title}" (${year}). Is it available?`;
+const enquireHref = site.whatsapp
+  ? `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(enquiry)}`
+  : site.email
+    ? `mailto:${site.email}?subject=${encodeURIComponent(`Enquiry: ${title}`)}&body=${encodeURIComponent(enquiry)}`
+    : site.instagram;
+---
+
+<Base title={title} description={`${title} (${year}), ${medium} by ${site.fullName}.`} image={image.src}>
+  <article class="wrap work">
+    <div class="art">
+      <Image src={image} alt={alt} widths={[600, 1000, 1600]} sizes="(min-width: 1000px) 58vw, 100vw" loading="eager" />
+    </div>
+
+    <aside class="info">
+      <a href="/works" class="muted small back">← All works</a>
+      <h1>{title}</h1>
+      <dl>
+        <div><dt>Year</dt><dd>{year}</dd></div>
+        <div><dt>Medium</dt><dd>{medium}</dd></div>
+        {dimensions && <div><dt>Size</dt><dd>{dimensions}</dd></div>}
+        <div><dt>Status</dt><dd class={status === 'available' ? 'accent' : ''}>{statusLabel[status]}</dd></div>
+      </dl>
+      <div class="body"><Content /></div>
+      {
+        status === 'available' && (
+          <a class="button solid" href={enquireHref} target="_blank" rel="noopener">
+            Enquire about this work
+          </a>
+        )
+      }
+    </aside>
+  </article>
+
+  {
+    details.length > 0 && (
+      <section class="wrap details">
+        <p class="eyebrow">Details</p>
+        <div class="detail-grid">
+          {details.map((d) => (
+            <Image src={d.image} alt={d.alt} widths={[600, 1000, 1400]} sizes="(min-width: 800px) 50vw, 100vw" class="reveal" />
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    next.id !== work.id && (
+      <nav class="wrap next" aria-label="Next work">
+        <a href={`/works/${next.id}`}>
+          <span class="eyebrow">Next work</span>
+          <span class="next-title">{next.data.title} →</span>
+        </a>
+      </nav>
+    )
+  }
+</Base>
+
+<style>
+  .work {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding-top: 100px;
+  }
+  @media (min-width: 1000px) {
+    .work {
+      grid-template-columns: 1.45fr 1fr;
+      gap: clamp(48px, 6vw, 100px);
+      padding-top: 120px;
+      align-items: start;
+    }
+    .info {
+      position: sticky;
+      top: 120px;
+    }
+  }
+  .art :global(img) {
+    width: 100%;
+  }
+  .back {
+    display: inline-block;
+    margin-bottom: 28px;
+  }
+  .back:hover {
+    color: var(--text);
+  }
+  h1 {
+    font-size: clamp(48px, 6vw, 88px);
+    margin-bottom: 32px;
+  }
+  dl {
+    margin: 0 0 32px;
+    border-top: 1px solid var(--line);
+  }
+  dl div {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+  }
+  dt {
+    color: var(--muted);
+  }
+  dd {
+    margin: 0;
+    text-align: right;
+  }
+  .accent {
+    color: var(--accent);
+  }
+  .body {
+    color: #d8cfc3;
+    margin-bottom: 32px;
+    max-width: 52ch;
+  }
+  .details {
+    padding-top: clamp(80px, 10vw, 140px);
+  }
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(16px, 2vw, 28px);
+    margin-top: 24px;
+  }
+  @media (min-width: 800px) {
+    .detail-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .detail-grid :global(img) {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+  .next {
+    padding-top: clamp(80px, 10vw, 140px);
+    padding-bottom: clamp(80px, 10vw, 140px);
+  }
+  .next a {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border-top: 1px solid var(--line);
+    padding-top: 32px;
+  }
+  .next-title {
+    font-family: var(--serif);
+    font-size: clamp(40px, 6vw, 80px);
+    line-height: 1;
+    transition: color 0.2s;
+  }
+  .next a:hover .next-title {
+    color: var(--accent);
+  }
+</style>

@@ -1,0 +1,143 @@
+---
+import Base from '../layouts/Base.astro';
+import { contactLinks, site } from '../site';
+
+const steps = [
+  {
+    title: 'Share your idea',
+    text: 'Tell us what you have in mind: a person, a family moment, a place, or a mood for a space. Photos help.',
+  },
+  {
+    title: 'Agree the details',
+    text: 'Together we settle the size, palette, timeline and price before any paint touches the canvas.',
+  },
+  {
+    title: 'The painting',
+    text: 'The work is built up layer by layer in thick impasto. You receive progress updates along the way.',
+  },
+  {
+    title: 'Delivery',
+    text: 'Once fully dry, the finished canvas is carefully packed and delivered anywhere in Nigeria.',
+  },
+];
+const links = contactLinks();
+---
+
+<Base title="Commissions" description="Commission an original impasto painting from Ayotisegun. Open for commissions nationwide.">
+  <div class="wrap">
+    <header class="page-head">
+      <p class="eyebrow">Open for commissions nationwide</p>
+      <h1>Commissions</h1>
+    </header>
+
+    <p class="lede">
+      An original painting made for you: portraits, family scenes, places that matter, or a large statement piece for
+      a home, office, hotel or brand.
+    </p>
+
+    <ol class="steps">
+      {
+        steps.map((s, i) => (
+          <li class="reveal">
+            <span class="num">{String(i + 1).padStart(2, '0')}</span>
+            <h2>{s.title}</h2>
+            <p class="muted">{s.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+
+    <section class="contact" id="contact">
+      <div>
+        <p class="eyebrow">Get in touch</p>
+        <h2>Let's make something together.</h2>
+      </div>
+      <ul>
+        {
+          links.map((l) => (
+            <li>
+              <a href={l.href} target={l.href.startsWith('http') ? '_blank' : undefined} rel="noopener">
+                <span class="muted">{l.label}</span>
+                <span class="value">{l.value} →</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .lede {
+    font-family: var(--serif);
+    font-size: clamp(28px, 3.6vw, 48px);
+    line-height: 1.12;
+    max-width: 26ch;
+    margin-bottom: clamp(64px, 9vw, 120px);
+  }
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    border-top: 1px solid var(--line);
+  }
+  @media (min-width: 800px) {
+    .steps {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  .steps li {
+    padding: 32px 24px 40px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .num {
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+  }
+  .steps h2 {
+    font-size: 30px;
+    margin: 16px 0 12px;
+  }
+  .contact {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: clamp(80px, 12vw, 160px) 0;
+  }
+  @media (min-width: 900px) {
+    .contact {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+  }
+  .contact h2 {
+    font-size: clamp(40px, 5.5vw, 76px);
+    margin-top: 16px;
+    max-width: 12ch;
+  }
+  .contact ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--line);
+  }
+  .contact a {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 17px;
+  }
+  .contact a:hover .value {
+    color: var(--accent);
+  }
+  .value {
+    transition: color 0.2s;
+    text-align: right;
+  }
+</style>

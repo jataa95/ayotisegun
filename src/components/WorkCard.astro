@@ -1,0 +1,70 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { statusLabel } from '../site';
+
+interface Props {
+  work: CollectionEntry<'works'>;
+  eager?: boolean;
+}
+
+const { work, eager = false } = Astro.props;
+const { title, year, medium, image, alt, status } = work.data;
+---
+
+<a class="card reveal" href={`/works/${work.id}`}>
+  <div class="frame">
+    <Image
+      src={image}
+      alt={alt}
+      widths={[480, 800, 1200]}
+      sizes="(min-width: 900px) 45vw, 100vw"
+      loading={eager ? 'eager' : 'lazy'}
+    />
+  </div>
+  <div class="meta">
+    <h3>{title}</h3>
+    <span class="status" data-status={status}>{statusLabel[status]}</span>
+  </div>
+  <p class="muted small">{medium}, {year}</p>
+</a>
+
+<style>
+  .card {
+    display: block;
+  }
+  .frame {
+    overflow: hidden;
+    background: var(--bg-raised);
+  }
+  .frame :global(img) {
+    width: 100%;
+    transition: transform 1.2s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .card:hover .frame :global(img) {
+    transform: scale(1.04);
+  }
+  .meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-top: 18px;
+  }
+  h3 {
+    font-size: clamp(26px, 3vw, 34px);
+  }
+  .status {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .status[data-status='available'] {
+    color: var(--accent);
+  }
+  .small {
+    margin-top: 4px;
+  }
+</style>
