@@ -1,0 +1,68 @@
+---
+import Base from '../layouts/Base.astro';
+import Split from '../components/Split.astro';
+import { site } from '../site';
+---
+
+<Base title="Privacy" description="How this website handles your information.">
+  <header class="wrap page-title">
+    <Split text="Privacy" class="display" />
+    <p class="headline fade-in">Short and plain: this site collects as little as possible.</p>
+  </header>
+
+  <section class="wrap prose">
+    <h2>What this site stores</h2>
+    <p>
+      This website has no accounts, no tracking cookies and no analytics. It remembers one thing in your browser for the
+      length of your visit: that you have already seen the loading screen, so it is not shown again.
+    </p>
+
+    <h2>The contact form</h2>
+    <p>
+      The form does not save or send anything to this website. When you press send, your message is handed to the app you
+      choose to continue in (WhatsApp, your email app or Instagram), and the conversation continues there under that
+      service's own privacy policy. Your details are only used to reply to your enquiry.
+    </p>
+
+    <h2>Third-party services</h2>
+    <p>
+      Fonts are loaded from Google Fonts, which means your browser connects to Google's servers. Links to Instagram,
+      WhatsApp or YouTube take you to those services, which have their own policies.
+    </p>
+
+    <h2>Artwork images</h2>
+    <p>
+      All paintings and photographs on this site are the work and property of {site.fullName}. Please do not reproduce them
+      without permission.
+    </p>
+
+    <h2>Questions</h2>
+    <p>
+      To ask about your information or anything on this page, <a href="/contact" class="link">get in touch</a>.
+    </p>
+    <p class="muted small">Last updated {new Date().getFullYear()}.</p>
+  </section>
+</Base>
+
+<style>
+  .page-title .headline {
+    font-size: clamp(16px, 1.4vw, 20px);
+  }
+  .prose {
+    max-width: calc(64ch + var(--gutter) * 2);
+    padding-bottom: clamp(80px, 10vw, 140px);
+    font-size: 16px;
+  }
+  .prose h2 {
+    font-size: clamp(18px, 1.6vw, 22px);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    border-top: 1px solid var(--line);
+    padding-top: 20px;
+    margin: 40px 0 12px;
+  }
+  .prose p + p {
+    margin-top: 12px;
+  }
+</style>

@@ -17,14 +17,29 @@ Design: white, editorial layout with huge bold Inter type, inspired by the refer
 
 | Page | File |
 |---|---|
-| Home: name with floating artwork tiles, banners, about, featured works, process, contact form | `src/pages/index.astro` |
+| Home: preloader, name with orbiting artworks, banners, about, featured works, process, contact form | `src/pages/index.astro` |
 | Work grid | `src/pages/work/index.astro` |
 | Single artwork | `src/pages/work/[slug].astro` |
+| Commissions (what to commission, process, FAQ) | `src/pages/commissions.astro` |
 | Info (about the artist) | `src/pages/info.astro` |
-| Contact form (shared) | `src/components/Contact.astro` |
+| Contact | `src/pages/contact.astro` |
+| Care & delivery | `src/pages/care.astro` |
+| Privacy | `src/pages/privacy.astro` |
+| Not found | `src/pages/404.astro` |
 
-The hero tiles are small crops in `src/assets/tiles/`; their positions are set in the `tiles` list at the top of
-`src/pages/index.astro`.
+Shared pieces: layout, menu, cursor, preloader and smooth scroll in `src/layouts/Base.astro`; menu links and
+process steps in `src/data.ts`; letter-by-letter headings in `src/components/Split.astro`.
+
+## Motion
+
+- **Preloader** shows once per visit (remembered in `sessionStorage`).
+- **Hero orbit**: the artworks circle the name on a tilted 3D ellipse. Drag to spin, hover to slow down and see the
+  title. Speeds and radii are at the top of the `<script>` in `src/pages/index.astro`.
+- **Smooth scrolling** uses [Lenis](https://github.com/darkroomengineering/lenis); page changes use the browser's
+  View Transitions; images unveil and headings rise as you scroll.
+- Everything turns off for visitors who have "reduce motion" enabled, and the site still works without JavaScript.
+
+The orbit tiles are small crops in `src/assets/tiles/`, listed in `tiles` at the top of `src/pages/index.astro`.
 
 The contact form has no server: it opens WhatsApp with the message filled in if `whatsapp` is set in `src/site.ts`,
 otherwise an email if `email` is set, otherwise it copies the message and opens Instagram.

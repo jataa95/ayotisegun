@@ -1,6 +1,10 @@
 ---
 import { site } from '../site';
 
+interface Props {
+  heading?: string;
+}
+const { heading = "Let's paint something that lasts" } = Astro.props;
 const topics = ['Commission', 'Buy a painting', 'Exhibition / press', 'Something else'];
 // Where the form sends: WhatsApp first, then email, otherwise Instagram DM.
 const channel = site.whatsapp ? 'whatsapp' : site.email ? 'email' : 'instagram';
@@ -9,7 +13,7 @@ const channel = site.whatsapp ? 'whatsapp' : site.email ? 'email' : 'instagram';
 <section class="contact dark wrap" id="contact">
   <div class="intro">
     <p class="label">(Contact)</p>
-    <h2 class="display">Let's paint something that lasts</h2>
+    <h2 class="display">{heading}</h2>
     <p class="direct small muted">
       Prefer to message directly? <a href={site.instagram} target="_blank" rel="noopener" class="link">{site.instagramHandle}</a>
     </p>

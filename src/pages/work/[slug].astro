@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets';
 import { getCollection, render } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
+import Split from '../../components/Split.astro';
 import Base from '../../layouts/Base.astro';
 import { site, statusLabel } from '../../site';
 
@@ -41,8 +42,8 @@ const meta = [
   <section class="cover">
     <Image src={image} alt="" widths={[800, 1400, 2000]} sizes="100vw" loading="eager" class="cover-img" />
     <div class="cover-text">
-      <h1 class="display">{title}</h1>
-      <p class="small">Index No. {index}</p>
+      <Split text={title} class="display" />
+      <p class="small fade-in" style="--d:0.6s">Index No. {index}</p>
     </div>
   </section>
 
@@ -65,7 +66,7 @@ const meta = [
   </section>
 
   <section class="wrap">
-    <div class="panel full">
+    <div class="panel full unveil">
       <Image src={image} alt={alt} widths={[600, 1000, 1500]} sizes="(min-width: 900px) 45vw, 90vw" />
     </div>
   </section>

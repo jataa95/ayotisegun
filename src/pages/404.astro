@@ -1,0 +1,64 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Split from '../components/Split.astro';
+import texture from '../assets/tiles/dusk-ground.jpg';
+---
+
+<Base title="Page not found">
+  <section class="lost wrap">
+    <Image src={texture} alt="" widths={[300, 600]} sizes="30vw" class="lost-img" loading="eager" />
+    <Split text="404" class="display" />
+    <p class="headline fade-in">This page got lost in the paint.</p>
+    <div class="actions fade-in" style="--d:0.6s">
+      <a href="/" class="button-dark">Back home →</a>
+      <a href="/work" class="link">See the work</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .lost {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .lost :global(.display) {
+    font-size: clamp(120px, 30vw, 440px);
+    position: relative;
+    z-index: 2;
+  }
+  .lost :global(.lost-img) {
+    position: absolute;
+    width: clamp(140px, 18vw, 260px);
+    left: 50%;
+    top: 50%;
+    translate: -10% -80%;
+    rotate: 8deg;
+    z-index: 1;
+    animation: float 6s ease-in-out infinite;
+  }
+  @keyframes float {
+    50% {
+      translate: -10% -86%;
+      rotate: 5deg;
+    }
+  }
+  .headline {
+    position: relative;
+    z-index: 2;
+  }
+  .actions {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+  }
+</style>

@@ -1,0 +1,78 @@
+---
+import Base from '../layouts/Base.astro';
+import Split from '../components/Split.astro';
+import Contact from '../components/Contact.astro';
+import { contactLinks, site } from '../site';
+
+const links = contactLinks();
+---
+
+<Base title="Contact" description="Get in touch with Ayotisegun about commissions, available paintings, exhibitions and press.">
+  <header class="wrap page-title">
+    <Split text="Contact" class="display" />
+    <p class="headline fade-in">Commissions, available works, exhibitions and press. Every message gets a personal reply.</p>
+  </header>
+
+  <section class="wrap channels">
+    {
+      links.map((l, i) => (
+        <a href={l.href} target={l.href.startsWith('http') ? '_blank' : undefined} rel="noopener" class="channel fade-in" style={`--d:${0.5 + i * 0.08}s`}>
+          <span class="label">{l.label}</span>
+          <span class="value">{l.value}</span>
+          <span class="arrow" aria-hidden="true">↗</span>
+        </a>
+      ))
+    }
+    <div class="channel static fade-in" style="--d:0.75s">
+      <span class="label">Studio</span>
+      <span class="value">{site.location}</span>
+      <span class="muted small">Commissions open nationwide</span>
+    </div>
+  </section>
+
+  <Contact heading="Tell us about your idea" />
+</Base>
+
+<style>
+  .page-title .headline {
+    font-size: clamp(16px, 1.4vw, 20px);
+  }
+  .channels {
+    display: grid;
+    grid-template-columns: 1fr;
+    border-top: 1px solid var(--line);
+    margin-bottom: clamp(64px, 8vw, 112px);
+  }
+  @media (min-width: 700px) {
+    .channels {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+  }
+  .channel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 24px 24px 28px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .value {
+    font-size: clamp(20px, 2vw, 28px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .arrow {
+    position: absolute;
+    right: 8px;
+    top: 22px;
+    transition: transform 0.3s;
+  }
+  a.channel:hover .value {
+    color: var(--accent);
+  }
+  a.channel:hover .arrow {
+    transform: translate(3px, -3px);
+  }
+</style>

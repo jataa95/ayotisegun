@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import Split from '../../components/Split.astro';
 import Base from '../../layouts/Base.astro';
 import WorkPanel from '../../components/WorkPanel.astro';
 
@@ -8,8 +9,8 @@ const works = (await getCollection('works')).sort((a, b) => a.data.order - b.dat
 
 <Base title="Work" description="Impasto paintings by Ayotisegun: oil on canvas, built up with the palette knife.">
   <header class="wrap page-title">
-    <h1 class="display">Work</h1>
-    <p class="headline">Paintings of riders, streets and people, built up thick with the palette knife.</p>
+    <Split text="Work" class="display" />
+    <p class="headline fade-in">Paintings of riders, streets and people, built up thick with the palette knife.</p>
   </header>
   <section class="wrap grid">
     {works.map((work, i) => <WorkPanel work={work} index={i + 1} eager={i < 2} />)}

@@ -1,0 +1,132 @@
+---
+import Base from '../layouts/Base.astro';
+import Split from '../components/Split.astro';
+import { Image } from 'astro:assets';
+import detail from '../assets/works/riders-2026-detail-2.jpg';
+
+const sections = [
+  {
+    title: 'Hanging',
+    points: [
+      'Hang away from direct sunlight, which fades pigments over time.',
+      'Avoid walls above radiators, cookers, air-conditioning vents or anywhere damp. Steady temperature and humidity keep thick paint stable.',
+      'Use two hooks or a strong wire rated for the weight of the canvas.',
+    ],
+  },
+  {
+    title: 'Handling',
+    points: [
+      'Hold the painting by the sides of the stretcher frame, never by the painted surface.',
+      'Impasto ridges can chip under pressure, so never lean anything against the front of the canvas or stack paintings face to face.',
+      'Store upright, wrapped in breathable material, not plastic.',
+    ],
+  },
+  {
+    title: 'Cleaning',
+    points: [
+      'Dust occasionally with a soft, dry brush, working gently with the direction of the strokes.',
+      'Never use water, cleaning sprays or a damp cloth on the surface.',
+      'For any damage, get in touch before attempting a repair.',
+    ],
+  },
+  {
+    title: 'Delivery',
+    points: [
+      'Paintings only travel once fully dry. Thick impasto needs extra drying time, which is built into every timeline.',
+      'Each work is signed, photographed, wrapped and packed to protect the raised surface.',
+      'Delivery is available anywhere in Nigeria. For international enquiries, please get in touch.',
+    ],
+  },
+];
+---
+
+<Base title="Care & delivery" description="How to hang, handle and care for an original impasto painting by Ayotisegun, and how paintings are delivered.">
+  <header class="wrap page-title">
+    <Split text="Care" class="display" />
+    <p class="headline fade-in">Thick paint is built to last. A little care keeps every ridge and colour as it left the studio.</p>
+  </header>
+
+  <section class="wrap body">
+    <div class="side">
+      <Image src={detail} alt="Raking-light close-up showing the depth of the impasto surface." widths={[500, 900]} sizes="(min-width: 900px) 30vw, 100vw" class="unveil" />
+    </div>
+    <div class="list">
+      {
+        sections.map((s, i) => (
+          <section class="block reveal">
+            <p class="label">{String(i + 1).padStart(2, '0')}</p>
+            <h2>{s.title}</h2>
+            <ul>
+              {s.points.map((p) => (
+                <li>{p}</li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+      <p class="muted small note">Questions about a painting you own? <a href="/contact" class="link">Get in touch</a></p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-title .headline {
+    font-size: clamp(16px, 1.4vw, 20px);
+  }
+  .body {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding-bottom: clamp(80px, 10vw, 140px);
+  }
+  @media (min-width: 900px) {
+    .body {
+      grid-template-columns: 1fr 2fr;
+      gap: calc(var(--gutter) * 2);
+      align-items: start;
+    }
+    .side {
+      position: sticky;
+      top: 90px;
+    }
+  }
+  .side :global(img) {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+  .block {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    border-top: 1px solid var(--line);
+    padding: 24px 0 40px;
+  }
+  @media (min-width: 700px) {
+    .block {
+      grid-template-columns: 60px 1fr 2fr;
+      gap: var(--gutter);
+    }
+  }
+  h2 {
+    font-size: clamp(26px, 3vw, 44px);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.04em;
+    line-height: 0.95;
+  }
+  ul {
+    margin: 0;
+    padding-left: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 16px;
+  }
+  li::marker {
+    color: var(--accent);
+  }
+  .note {
+    margin-top: 16px;
+  }
+</style>

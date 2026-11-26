@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import Split from '../components/Split.astro';
 import Base from '../layouts/Base.astro';
 import { site } from '../site';
 import feature from '../assets/works/riders-dusk-2026.jpg';
@@ -17,11 +18,11 @@ const facts = [
 
 <Base title="Info" description={site.description}>
   <header class="wrap page-title">
-    <h1 class="display">Info</h1>
+    <Split text="Info" class="display" />
   </header>
 
   <section class="wrap intro">
-    <div class="photo">
+    <div class="photo unveil">
       <!-- Replace with a portrait of the artist when available -->
       <Image src={signature} alt="Close-up of Riders at Dusk with the artist's signature, Obajuluwa Segun 2026." widths={[600, 1000]} sizes="(min-width: 900px) 40vw, 100vw" loading="eager" />
     </div>
@@ -59,7 +60,7 @@ const facts = [
         a crowded street or a rider in the evening light becomes something solid, physical and permanent.
       </p>
     </div>
-    <Image src={feature} alt="Riders at Dusk: two riders in yellow and red headwraps on dark horses, in thick strokes of blue, coral and gold." widths={[600, 1000, 1400]} sizes="(min-width: 900px) 48vw, 100vw" class="reveal" />
+    <Image src={feature} alt="Riders at Dusk: two riders in yellow and red headwraps on dark horses, in thick strokes of blue, coral and gold." widths={[600, 1000, 1400]} sizes="(min-width: 900px) 48vw, 100vw" class="unveil" />
   </section>
 </Base>
 

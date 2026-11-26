@@ -1,23 +1,25 @@
 ---
+import { Image } from 'astro:assets';
 import '../styles/global.css';
 import { site } from '../site';
+import { nav } from '../data';
+import pre1 from '../assets/tiles/dusk-heads.jpg';
+import pre2 from '../assets/tiles/grey-heads.jpg';
+import pre3 from '../assets/tiles/street-figure.jpg';
+import pre4 from '../assets/tiles/dusk-legs.jpg';
+import pre5 from '../assets/tiles/street-roof.jpg';
+import pre6 from '../assets/tiles/grey-texture.jpg';
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
-  /** Header text colour when it sits over a dark image at the top of the page */
-  headerOnDark?: boolean;
 }
 
-const { title, description = site.description, image, headerOnDark = false } = Astro.props;
+const { title, description = site.description, image } = Astro.props;
 const pageTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.role}`;
-const ogImage = image ? new URL(image, Astro.site).toString() : undefined;
-const menu = [
-  { href: '/work', label: 'Work' },
-  { href: '/info', label: 'Info' },
-  { href: '/#contact', label: 'Contact' },
-];
+const ogImage = new URL(image ?? '/media/hero-poster.jpg', Astro.site).toString();
+const preImages = [pre1, pre2, pre3, pre4, pre5, pre6];
 ---
 
 <!doctype html>
@@ -31,8 +33,9 @@ const menu = [
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-    {ogImage && <meta property="og:image" content={ogImage} />}
-    <meta name="theme-color" content="#ffffff" />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#151515" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -40,20 +43,54 @@ const menu = [
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
+    <script is:inline>
+      // Runs before paint: decide whether to show the preloader (first page of a visit only).
+      (function () {
+        var d = document.documentElement;
+        d.classList.add('js');
+        var seen = false;
+        try {
+          seen = sessionStorage.getItem('ayo-loaded') === '1';
+        } catch (e) {}
+        var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (!seen && !reduce) d.classList.add('preloading');
+        else d.classList.add('ready');
+      })();
+    </script>
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
 
-    <header class:list={['site-header', { 'on-dark': headerOnDark }]}>
+    <div class="preloader" aria-hidden="true">
+      <div class="pre-stack">
+        {preImages.map((img, i) => <Image src={img} alt="" widths={[240, 400]} sizes="22vw" loading="eager" style={`--k:${i}`} />)}
+      </div>
+      <p class="pre-name">{site.name}</p>
+      <p class="pre-role small">{site.role}</p>
+      <p class="pre-count display"><span data-count>0</span></p>
+    </div>
+
+    <header class="site-header">
       <a href="/" class="name">{site.name}</a>
-      <button class="menu-toggle" aria-expanded="false" aria-controls="menu">Menu</button>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="menu">
+        <span class="mt-label">Menu</span>
+      </button>
     </header>
 
     <div class="menu dark" id="menu" hidden>
       <nav aria-label="Main">
-        {menu.map((m) => <a href={m.href} class="display">{m.label}</a>)}
+        {
+          nav.map((m, i) => (
+            <a href={m.href} class="display" style={`--i:${i}`}>
+              <span>{m.label}</span>
+            </a>
+          ))
+        }
       </nav>
-      <a href={site.instagram} target="_blank" rel="noopener" class="menu-ig">{site.instagramHandle}</a>
+      <div class="menu-foot small">
+        <a href={site.instagram} target="_blank" rel="noopener">{site.instagramHandle}</a>
+        <span>{site.role} — {site.location}</span>
+      </div>
     </div>
 
     <main id="main">
@@ -63,12 +100,27 @@ const menu = [
     <footer class="site-footer dark">
       <div class="footer-hero">
         <p class="display footer-name">{site.name}</p>
-        <a href="/#contact" class="link">Get in touch →</a>
+        <a href="/contact" class="link">Get in touch →</a>
       </div>
-      <p class="footer-line">{site.role} — {site.location}</p>
+      <div class="footer-cols small">
+        <div>
+          <p class="label">Explore</p>
+          {nav.map((m) => <a href={m.href}>{m.label}</a>)}
+        </div>
+        <div>
+          <p class="label">Collectors</p>
+          <a href="/commissions#faq">FAQ</a>
+          <a href="/care">Care &amp; delivery</a>
+          <a href="/privacy">Privacy</a>
+        </div>
+        <div>
+          <p class="label">Follow</p>
+          <a href={site.instagram} target="_blank" rel="noopener">Instagram ↗</a>
+          {site.youtube && <a href={site.youtube} target="_blank" rel="noopener">YouTube ↗</a>}
+        </div>
+      </div>
       <div class="footer-bar small">
-        <a href={site.instagram} target="_blank" rel="noopener">Ig</a>
-        <a href="/work">All work</a>
+        <span>{site.role} — {site.location}</span>
         <span class="muted">© {new Date().getFullYear()} {site.fullName}</span>
       </div>
     </footer>
@@ -76,34 +128,87 @@ const menu = [
     <div class="cursor" aria-hidden="true"><span>View</span></div>
 
     <script>
+      import Lenis from 'lenis';
+
+      const root = document.documentElement;
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // Smooth scrolling
+      const lenis = reduce ? null : new Lenis({ autoRaf: true, lerp: 0.09, anchors: true });
+
+      // Preloader: counts to 100 while images load, then lifts away.
+      if (root.classList.contains('preloading')) {
+        const count = document.querySelector<HTMLElement>('[data-count]')!;
+        lenis?.stop();
+        const start = performance.now();
+        const minTime = 1900;
+        let loaded = document.readyState === 'complete';
+        addEventListener('load', () => (loaded = true));
+        setTimeout(() => (loaded = true), 6000); // never hold the page hostage
+        let shown = 0;
+        const step = (now: number) => {
+          const t = Math.min(1, (now - start) / minTime);
+          const eased = 1 - Math.pow(1 - t, 3);
+          const target = loaded ? eased * 100 : Math.min(eased * 100, 88);
+          shown += (target - shown) * 0.25;
+          count.textContent = String(Math.round(shown));
+          if (t >= 1 && loaded && shown > 99.4) {
+            count.textContent = '100';
+            root.classList.add('ready');
+            root.classList.add('preloader-out');
+            try {
+              sessionStorage.setItem('ayo-loaded', '1');
+            } catch {}
+            setTimeout(() => {
+              root.classList.remove('preloading', 'preloader-out');
+              lenis?.start();
+            }, 1100);
+            return;
+          }
+          requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      }
+
       // Full-screen menu
       const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle')!;
+      const label = toggle.querySelector('.mt-label')!;
       const menu = document.getElementById('menu')!;
       const setOpen = (open: boolean) => {
-        menu.hidden = !open;
+        if (open) {
+          menu.hidden = false;
+          requestAnimationFrame(() => menu.classList.add('open'));
+          lenis?.stop();
+        } else {
+          menu.classList.remove('open');
+          setTimeout(() => (menu.hidden = true), 500);
+          lenis?.start();
+        }
         toggle.setAttribute('aria-expanded', String(open));
-        toggle.textContent = open ? 'Close' : 'Menu';
+        label.textContent = open ? 'Close' : 'Menu';
         document.body.classList.toggle('menu-open', open);
       };
-      toggle.addEventListener('click', () => setOpen(menu.hidden));
+      toggle.addEventListener('click', () => setOpen(menu.hidden || !menu.classList.contains('open')));
       menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
       document.addEventListener('keydown', (e) => e.key === 'Escape' && !menu.hidden && setOpen(false));
 
       // Cursor dot that grows into "View" over artworks (mouse/trackpad only)
-      if (matchMedia('(pointer: fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      if (matchMedia('(pointer: fine)').matches && !reduce) {
         const cursor = document.querySelector<HTMLElement>('.cursor')!;
         let x = innerWidth / 2, y = innerHeight / 2, cx = x, cy = y;
         document.addEventListener('mousemove', (e) => {
           x = e.clientX;
           y = e.clientY;
           cursor.classList.add('on');
-          const target = (e.target as HTMLElement).closest('[data-cursor="view"]');
-          cursor.classList.toggle('view', !!target);
+          const el = e.target as HTMLElement;
+          cursor.classList.toggle('view', !!el.closest('[data-cursor="view"]'));
+          cursor.classList.toggle('drag', !!el.closest('[data-cursor="drag"]') && !el.closest('[data-cursor="view"]'));
+          cursor.classList.toggle('link', !!el.closest('a, button, label') && !el.closest('[data-cursor]'));
         });
         document.addEventListener('mouseleave', () => cursor.classList.remove('on'));
         const tick = () => {
-          cx += (x - cx) * 0.2;
-          cy += (y - cy) * 0.2;
+          cx += (x - cx) * 0.18;
+          cy += (y - cy) * 0.18;
           cursor.style.transform = `translate(${cx}px, ${cy}px)`;
           requestAnimationFrame(tick);
         };
@@ -133,12 +238,18 @@ const menu = [
         color: inherit;
         cursor: pointer;
       }
+
       .menu {
         position: fixed;
         inset: 0;
         z-index: 110;
         display: grid;
         place-items: center;
+        clip-path: inset(0 0 100% 0);
+        transition: clip-path 0.7s cubic-bezier(0.76, 0, 0.24, 1);
+      }
+      .menu.open {
+        clip-path: inset(0 0 0 0);
       }
       .menu[hidden] {
         display: none;
@@ -147,22 +258,36 @@ const menu = [
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 0.12em;
-        font-size: clamp(56px, 9vw, 96px);
+        font-size: clamp(52px, 8.5vw, 104px);
       }
       .menu nav a {
+        display: block;
+        overflow: hidden;
         color: #6d6d6a;
-        transition: color 0.2s;
+        transition: color 0.3s;
+        padding: 0.02em 0;
+      }
+      .menu nav a span {
+        display: block;
+        transform: translateY(105%);
+        transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        transition-delay: calc(0.15s + var(--i) * 0.06s);
+      }
+      .menu.open nav a span {
+        transform: none;
       }
       .menu nav a:hover,
       .menu nav a:focus-visible {
         color: var(--paper);
       }
-      .menu-ig {
+      .menu-foot {
         position: absolute;
         left: var(--gutter);
+        right: var(--gutter);
         bottom: 24px;
-        font-size: 14px;
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
         font-weight: 500;
         color: #8c8c88;
       }
@@ -174,7 +299,7 @@ const menu = [
         padding: 0 var(--gutter) 20px;
       }
       .footer-hero {
-        min-height: 72vh;
+        min-height: 62vh;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -187,31 +312,40 @@ const menu = [
         font-size: clamp(56px, 13.2vw, 210px);
         white-space: nowrap;
       }
-      .footer-line {
-        text-align: center;
-        text-transform: uppercase;
+      .footer-cols {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px var(--gutter);
+        border-top: 1px solid var(--ink-line);
+        padding: 28px 0 56px;
         font-weight: 500;
-        font-size: clamp(13px, 1.1vw, 16px);
-        margin: 40px 0 48px;
+      }
+      .footer-cols div {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+      }
+      .footer-cols .label {
+        margin-bottom: 6px;
+      }
+      .footer-cols a:hover {
+        color: var(--accent);
       }
       .footer-bar {
-        display: grid;
-        grid-template-columns: 1fr auto 1fr;
-        gap: 16px;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
         font-weight: 500;
-      }
-      .footer-bar span {
-        text-align: right;
-      }
-      .footer-bar a:hover {
-        color: var(--accent);
+        text-transform: uppercase;
       }
 
       .cursor {
         position: fixed;
         left: 0;
         top: 0;
-        z-index: 300;
+        z-index: 400;
         pointer-events: none;
         width: 0;
         height: 0;
@@ -237,13 +371,29 @@ const menu = [
         text-transform: uppercase;
         display: grid;
         place-items: center;
-        transition: width 0.3s, height 0.3s, margin 0.3s, color 0.2s;
+        transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), height 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+          margin 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.2s;
       }
-      .cursor.view span {
-        width: 64px;
-        height: 64px;
-        margin: -32px 0 0 -32px;
+      .cursor.link span {
+        width: 28px;
+        height: 28px;
+        margin: -14px 0 0 -14px;
+        background: color-mix(in srgb, var(--accent) 35%, transparent);
+      }
+      .cursor.view span,
+      .cursor.drag span {
+        width: 68px;
+        height: 68px;
+        margin: -34px 0 0 -34px;
         color: #fff;
+      }
+      .cursor.drag span {
+        font-size: 0;
+      }
+      .cursor.drag span::after {
+        content: '← Drag →';
+        font-size: 9px;
+        white-space: nowrap;
       }
     </style>
   </body>
