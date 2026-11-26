@@ -1,0 +1,24 @@
+{
+  "name": "ayotisegun",
+  "version": "0.1.0",
+  "description": "Portfolio website for Ayotisegun (Obajuluwa Timothy Oluwasegun), impasto painter",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jataa95/ayotisegun.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jataa95/ayotisegun/issues"
+  },
+  "homepage": "https://github.com/jataa95/ayotisegun#readme",
+  "dependencies": {
+    "astro": "^5.18.2"
+  },
+  "private": true,
+  "type": "module"
+}

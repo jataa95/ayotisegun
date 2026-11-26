@@ -1,0 +1,22 @@
+---
+title: Riders
+year: 2026
+medium: Oil on canvas (impasto)
+dimensions: ""
+image: ../../assets/works/riders-2026.jpg
+alt: Thickly textured grey and black impasto painting of two horses and riders charging forward, with figures behind them.
+details:
+  - image: ../../assets/works/riders-2026-detail-1.jpg
+    alt: Close-up of the riders and horses showing the raised palette-knife texture.
+  - image: ../../assets/works/riders-2026-detail-2.jpg
+    alt: Angled close-up of the painting's surface in daylight, showing the depth of the paint.
+status: available
+featured: true
+order: 1
+---
+
+Two riders surge out of a storm of grey, the paint built up so thickly that the horses
+seem to push forward off the canvas. Palette-knife strokes carry the motion, dust and
+noise of the moment in a restrained palette of charcoal, slate and bone white.
+
+<!-- Title is a placeholder: replace with the artist's own title. -->
