@@ -30,3 +30,7 @@ export const statusLabel: Record<string, string> = {
   commission: 'Commission',
   private: 'Private collection',
 };
+
+/** Width (as a % of the panel) that fits a painting fully inside a panel of the given aspect ratio. */
+export const fitWidth = (img: { width: number; height: number }, panelRatio: number, fill = 0.8) =>
+  `${(Math.min(fill, (fill * (img.width / img.height)) / panelRatio) * 100).toFixed(2)}%`;

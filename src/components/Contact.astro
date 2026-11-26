@@ -1,0 +1,229 @@
+---
+import { site } from '../site';
+
+const topics = ['Commission', 'Buy a painting', 'Exhibition / press', 'Something else'];
+// Where the form sends: WhatsApp first, then email, otherwise Instagram DM.
+const channel = site.whatsapp ? 'whatsapp' : site.email ? 'email' : 'instagram';
+---
+
+<section class="contact dark wrap" id="contact">
+  <div class="intro">
+    <p class="label">(Contact)</p>
+    <h2 class="display">Let's paint something that lasts</h2>
+    <p class="direct small muted">
+      Prefer to message directly? <a href={site.instagram} target="_blank" rel="noopener" class="link">{site.instagramHandle}</a>
+    </p>
+  </div>
+
+  <form
+    class="form"
+    data-channel={channel}
+    data-whatsapp={site.whatsapp}
+    data-email={site.email}
+    data-instagram={site.instagram}
+  >
+    <fieldset>
+      <legend class="label">I'm interested in</legend>
+      <div class="chips">
+        {
+          topics.map((t, i) => (
+            <label class="chip">
+              <input type="radio" name="topic" value={t} checked={i === 0} />
+              <span>{t}</span>
+            </label>
+          ))
+        }
+      </div>
+    </fieldset>
+
+    <div class="row">
+      <label class="field">
+        <span class="label">Your name</span>
+        <input name="name" required autocomplete="name" placeholder="Adaeze Okafor" />
+      </label>
+      <label class="field">
+        <span class="label">Email or phone</span>
+        <input name="reply" required autocomplete="email" placeholder="you@example.com" />
+      </label>
+    </div>
+    <label class="field">
+      <span class="label">Budget (optional)</span>
+      <input name="budget" placeholder="e.g. ₦500,000 – ₦1,500,000" />
+    </label>
+    <label class="field">
+      <span class="label">Tell Ayotisegun about it</span>
+      <textarea name="message" rows="3" required placeholder="What should be painted, the size you have in mind, where it will hang…"></textarea>
+    </label>
+
+    <div class="submit-row">
+      <button type="submit" class="send">
+        {channel === 'whatsapp' ? 'Send on WhatsApp' : channel === 'email' ? 'Send enquiry' : 'Send via Instagram'} →
+      </button>
+      <p class="note small muted" role="status"></p>
+    </div>
+  </form>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('.contact .form').forEach((form) => {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const d = new FormData(form);
+      const text = [
+        `Hello Ayotisegun, I'm interested in: ${d.get('topic')}.`,
+        '',
+        String(d.get('message')),
+        '',
+        d.get('budget') ? `Budget: ${d.get('budget')}` : '',
+        `Name: ${d.get('name')}`,
+        `Reply to: ${d.get('reply')}`,
+      ]
+        .filter((l, i, a) => !(l === '' && a[i - 1] === ''))
+        .join('\n');
+      const { channel, whatsapp, email, instagram } = form.dataset;
+      const note = form.querySelector('.note')!;
+      if (channel === 'whatsapp') {
+        window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(text)}`, '_blank');
+      } else if (channel === 'email') {
+        location.href = `mailto:${email}?subject=${encodeURIComponent(`${d.get('topic')} enquiry`)}&body=${encodeURIComponent(text)}`;
+      } else {
+        try {
+          await navigator.clipboard.writeText(text);
+          note.textContent = 'Your message is copied. Paste it into the Instagram chat that just opened.';
+        } catch {
+          note.textContent = 'Opening Instagram. Send your message there as a DM.';
+        }
+        window.open(instagram, '_blank');
+      }
+    });
+  });
+</script>
+
+<style>
+  .contact {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 48px;
+    padding-top: clamp(72px, 9vw, 120px);
+    padding-bottom: clamp(72px, 9vw, 120px);
+  }
+  @media (min-width: 900px) {
+    .contact {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--gutter);
+    }
+  }
+  h2 {
+    font-size: clamp(48px, 5.8vw, 92px);
+    margin: 20px 0 32px;
+    max-width: 9ch;
+  }
+  .direct .link {
+    color: var(--paper);
+    margin-left: 4px;
+  }
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .chip input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .chip span {
+    display: inline-block;
+    padding: 8px 16px;
+    border: 1px solid #3d3d3b;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+  }
+  .chip span:hover {
+    border-color: var(--paper);
+  }
+  .chip input:checked + span {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--ink);
+  }
+  .chip input:focus-visible + span {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  @media (min-width: 600px) {
+    .row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  input:not([type='radio']),
+  textarea {
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--ink-line);
+    color: var(--paper);
+    font: inherit;
+    font-size: 16px;
+    padding: 8px 0 12px;
+    border-radius: 0;
+    resize: vertical;
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: #5c5c59;
+  }
+  input:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .submit-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
+  }
+  .send {
+    background: var(--paper);
+    color: var(--ink);
+    border: 0;
+    padding: 14px 22px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .send:hover {
+    background: var(--accent);
+  }
+  .note {
+    max-width: 36ch;
+  }
+</style>

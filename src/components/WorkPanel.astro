@@ -1,0 +1,44 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { fitWidth } from '../site';
+
+interface Props {
+  work: CollectionEntry<'works'>;
+  index: number;
+  eager?: boolean;
+}
+const { work, index, eager = false } = Astro.props;
+const { title, image, alt } = work.data;
+---
+
+<a href={`/work/${work.id}`} class="work-panel reveal" data-cursor="view">
+  <div class="panel">
+    <Image
+      src={image}
+      alt={alt}
+      style={`width:${fitWidth(image, 4 / 5)}`}
+      widths={[400, 700, 1000]}
+      sizes="(min-width: 800px) 40vw, 90vw"
+      loading={eager ? 'eager' : 'lazy'}
+    />
+  </div>
+  <div class="caption small">
+    <span>{title}</span>
+    <span class="muted">Index No. {index}</span>
+  </div>
+</a>
+
+<style>
+  .panel {
+    aspect-ratio: 4 / 5;
+    padding: 0;
+  }
+  .caption {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 10px;
+    font-weight: 500;
+  }
+</style>

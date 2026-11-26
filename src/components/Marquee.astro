@@ -1,0 +1,72 @@
+---
+interface Props {
+  items: string[];
+  tone?: 'dark' | 'accent';
+}
+const { items, tone = 'dark' } = Astro.props;
+const row = [...items, ...items, ...items];
+---
+
+<div class:list={['marquee', tone]} aria-label={items.join(', ')} role="marquee">
+  {
+    [0, 1].map((copy) => (
+      <div class="track" aria-hidden="true">
+        {row.map((item) => (
+          <span class="item">
+            {item}
+            <span class="sep">◆</span>
+          </span>
+        ))}
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .marquee {
+    display: flex;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 12px 0;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.03em;
+    font-size: clamp(26px, 3.2vw, 46px);
+    line-height: 1;
+  }
+  .dark {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .accent {
+    background: var(--accent);
+    color: var(--ink);
+  }
+  .track {
+    display: flex;
+    flex-shrink: 0;
+    animation: scroll 40s linear infinite;
+  }
+  .item {
+    display: inline-flex;
+    align-items: center;
+  }
+  .sep {
+    font-size: 0.4em;
+    margin: 0 0.9em;
+    color: var(--accent);
+  }
+  .accent .sep {
+    color: var(--ink);
+  }
+  @keyframes scroll {
+    to {
+      transform: translateX(-100%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .track {
+      animation: none;
+    }
+  }
+</style>

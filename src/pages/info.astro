@@ -1,0 +1,136 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import { site } from '../site';
+import feature from '../assets/works/riders-dusk-2026.jpg';
+import signature from '../assets/works/riders-dusk-2026-signature.jpg';
+
+const facts = [
+  { k: 'Practice', v: 'Impasto painting, oil on canvas' },
+  { k: 'Available for', v: 'Commissions nationwide, exhibitions' },
+  { k: 'Instagram', v: `${site.instagramHandle} ↗`, href: site.instagram },
+  site.youtube
+    ? { k: 'Watch', v: 'From Inspiration to Impasto ↗', href: site.youtube }
+    : { k: 'Based in', v: site.location },
+];
+---
+
+<Base title="Info" description={site.description}>
+  <header class="wrap page-title">
+    <h1 class="display">Info</h1>
+  </header>
+
+  <section class="wrap intro">
+    <div class="photo">
+      <!-- Replace with a portrait of the artist when available -->
+      <Image src={signature} alt="Close-up of Riders at Dusk with the artist's signature, Obajuluwa Segun 2026." widths={[600, 1000]} sizes="(min-width: 900px) 40vw, 100vw" loading="eager" />
+    </div>
+    <div class="text">
+      <h2 class="headline">{site.fullName} — known as Ayotisegun — is an impasto painter.</h2>
+      <p>
+        His textured layers and heavy brushwork bring emotion to life. The journey began in secondary school, driven by a
+        deep love of art that has only grown stronger over the years.
+      </p>
+      <p>
+        Today his canvases capture the beauty, innocence and stories of people, especially children, who inspire his
+        creativity and remind him of life's purest moments. Riders, markets and busy streets fill the rest of the work,
+        all built up with the palette knife until light catches every ridge.
+      </p>
+      <dl class="facts">
+        {
+          facts.map((f) => (
+            <div>
+              <dt class="label">{f.k}</dt>
+              <dd>{f.href ? <a href={f.href} target="_blank" rel="noopener">{f.v}</a> : f.v}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <section class="wrap thread">
+    <div>
+      <p class="label">The thread through the work</p>
+      <h2 class="display">Everyday moments, made to last</h2>
+      <p>"{site.tagline}"</p>
+      <p>
+        Impasto suits that idea. The paint is laid on so thickly that each stroke keeps its shape, so a passing moment on
+        a crowded street or a rider in the evening light becomes something solid, physical and permanent.
+      </p>
+    </div>
+    <Image src={feature} alt="Riders at Dusk: two riders in yellow and red headwraps on dark horses, in thick strokes of blue, coral and gold." widths={[600, 1000, 1400]} sizes="(min-width: 900px) 48vw, 100vw" class="reveal" />
+  </section>
+</Base>
+
+<style>
+  .intro {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding-bottom: clamp(80px, 10vw, 140px);
+  }
+  @media (min-width: 900px) {
+    .intro {
+      grid-template-columns: 1fr 1fr;
+      gap: calc(var(--gutter) * 2);
+      align-items: start;
+    }
+  }
+  .photo :global(img) {
+    width: 100%;
+    aspect-ratio: 7 / 10;
+    object-fit: cover;
+  }
+  .text {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    font-size: 16px;
+    max-width: 62ch;
+  }
+  .text .headline {
+    margin-bottom: 16px;
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px var(--gutter);
+    margin: 32px 0 0;
+  }
+  dd {
+    margin: 4px 0 0;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  dd a:hover {
+    color: var(--accent);
+  }
+
+  .thread {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding-bottom: clamp(80px, 10vw, 140px);
+  }
+  @media (min-width: 900px) {
+    .thread {
+      grid-template-columns: 1fr 1fr;
+      gap: calc(var(--gutter) * 2);
+    }
+  }
+  .thread > div {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    font-size: 16px;
+    max-width: 52ch;
+  }
+  .thread h2 {
+    font-size: clamp(48px, 5.5vw, 88px);
+    margin: 4px 0 16px;
+  }
+  .thread :global(img) {
+    width: 100%;
+  }
+</style>

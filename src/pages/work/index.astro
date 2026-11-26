@@ -1,0 +1,34 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import WorkPanel from '../../components/WorkPanel.astro';
+
+const works = (await getCollection('works')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<Base title="Work" description="Impasto paintings by Ayotisegun: oil on canvas, built up with the palette knife.">
+  <header class="wrap page-title">
+    <h1 class="display">Work</h1>
+    <p class="headline">Paintings of riders, streets and people, built up thick with the palette knife.</p>
+  </header>
+  <section class="wrap grid">
+    {works.map((work, i) => <WorkPanel work={work} index={i + 1} eager={i < 2} />)}
+  </section>
+</Base>
+
+<style>
+  .page-title .headline {
+    font-size: clamp(16px, 1.4vw, 20px);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 48px var(--gutter);
+    padding-bottom: clamp(80px, 10vw, 140px);
+  }
+  @media (min-width: 700px) {
+    .grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

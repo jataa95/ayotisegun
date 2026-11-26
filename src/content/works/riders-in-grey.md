@@ -3,6 +3,8 @@ title: Riders in Grey
 year: 2026
 medium: Oil on canvas, impasto
 dimensions: ""
+theme: Motion, memory
+statement: The same charge, drained of colour, so all that is left is weight, speed and texture.
 image: ../../assets/works/riders-2026.jpg
 alt: Thickly textured grey and black impasto painting of two horses and riders charging forward, with figures behind them.
 details:

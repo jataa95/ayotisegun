@@ -3,6 +3,8 @@ title: Riders at Dusk
 year: 2026
 medium: Oil on canvas, impasto
 dimensions: ""
+theme: Motion, light, ceremony
+statement: Two riders come out of the evening light, and the paint comes out of the canvas with them.
 image: ../../assets/works/riders-dusk-2026.jpg
 alt: Vivid impasto painting of two riders in yellow and red headwraps on dark horses, in sweeping strokes of blue, coral and gold.
 details:

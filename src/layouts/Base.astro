@@ -6,17 +6,18 @@ interface Props {
   title?: string;
   description?: string;
   image?: string;
+  /** Header text colour when it sits over a dark image at the top of the page */
+  headerOnDark?: boolean;
 }
 
-const { title, description = site.description, image } = Astro.props;
+const { title, description = site.description, image, headerOnDark = false } = Astro.props;
 const pageTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.role}`;
-const path = Astro.url.pathname.replace(/\/$/, '') || '/';
-const nav = [
-  { href: '/works', label: 'Works' },
-  { href: '/about', label: 'About' },
-  { href: '/commissions', label: 'Commissions' },
-];
 const ogImage = image ? new URL(image, Astro.site).toString() : undefined;
+const menu = [
+  { href: '/work', label: 'Work' },
+  { href: '/info', label: 'Info' },
+  { href: '/#contact', label: 'Contact' },
+];
 ---
 
 <!doctype html>
@@ -31,47 +32,219 @@ const ogImage = image ? new URL(image, Astro.site).toString() : undefined;
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     {ogImage && <meta property="og:image" content={ogImage} />}
-    <meta name="theme-color" content="#0f0d0b" />
+    <meta name="theme-color" content="#ffffff" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
-    <header class="site-header">
-      <a href="/" class="wordmark" aria-label={`${site.name}, home`}>{site.name}</a>
-      <nav aria-label="Main">
-        {
-          nav.map((item) => (
-            <a href={item.href} aria-current={path.startsWith(item.href) ? 'page' : undefined}>
-              {item.label}
-            </a>
-          ))
-        }
-      </nav>
+
+    <header class:list={['site-header', { 'on-dark': headerOnDark }]}>
+      <a href="/" class="name">{site.name}</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="menu">Menu</button>
     </header>
+
+    <div class="menu dark" id="menu" hidden>
+      <nav aria-label="Main">
+        {menu.map((m) => <a href={m.href} class="display">{m.label}</a>)}
+      </nav>
+      <a href={site.instagram} target="_blank" rel="noopener" class="menu-ig">{site.instagramHandle}</a>
+    </div>
 
     <main id="main">
       <slot />
     </main>
 
-    <footer class="site-footer">
-      <div class="footer-inner">
-        <div>
-          <p class="footer-name">{site.fullName}</p>
-          <p class="muted">{site.role} · {site.location}</p>
-        </div>
-        <div class="footer-links">
-          <a href={site.instagram} rel="noopener" target="_blank">Instagram</a>
-          {site.youtube && <a href={site.youtube} rel="noopener" target="_blank">YouTube</a>}
-          <a href="/commissions">Commission a work</a>
-        </div>
+    <footer class="site-footer dark">
+      <div class="footer-hero">
+        <p class="display footer-name">{site.name}</p>
+        <a href="/#contact" class="link">Get in touch →</a>
       </div>
-      <p class="muted small">© {new Date().getFullYear()} {site.fullName}. All artwork images are the property of the artist.</p>
+      <p class="footer-line">{site.role} — {site.location}</p>
+      <div class="footer-bar small">
+        <a href={site.instagram} target="_blank" rel="noopener">Ig</a>
+        <a href="/work">All work</a>
+        <span class="muted">© {new Date().getFullYear()} {site.fullName}</span>
+      </div>
     </footer>
+
+    <div class="cursor" aria-hidden="true"><span>View</span></div>
+
+    <script>
+      // Full-screen menu
+      const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle')!;
+      const menu = document.getElementById('menu')!;
+      const setOpen = (open: boolean) => {
+        menu.hidden = !open;
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.textContent = open ? 'Close' : 'Menu';
+        document.body.classList.toggle('menu-open', open);
+      };
+      toggle.addEventListener('click', () => setOpen(menu.hidden));
+      menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+      document.addEventListener('keydown', (e) => e.key === 'Escape' && !menu.hidden && setOpen(false));
+
+      // Cursor dot that grows into "View" over artworks (mouse/trackpad only)
+      if (matchMedia('(pointer: fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const cursor = document.querySelector<HTMLElement>('.cursor')!;
+        let x = innerWidth / 2, y = innerHeight / 2, cx = x, cy = y;
+        document.addEventListener('mousemove', (e) => {
+          x = e.clientX;
+          y = e.clientY;
+          cursor.classList.add('on');
+          const target = (e.target as HTMLElement).closest('[data-cursor="view"]');
+          cursor.classList.toggle('view', !!target);
+        });
+        document.addEventListener('mouseleave', () => cursor.classList.remove('on'));
+        const tick = () => {
+          cx += (x - cx) * 0.2;
+          cy += (y - cy) * 0.2;
+          cursor.style.transform = `translate(${cx}px, ${cy}px)`;
+          requestAnimationFrame(tick);
+        };
+        tick();
+      }
+    </script>
+
+    <style>
+      .site-header {
+        position: fixed;
+        inset: 0 0 auto 0;
+        z-index: 120;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px var(--gutter);
+        font-size: 14px;
+        font-weight: 500;
+        mix-blend-mode: difference;
+        color: #fff;
+      }
+      .menu-toggle {
+        background: none;
+        border: 0;
+        padding: 0;
+        font: inherit;
+        color: inherit;
+        cursor: pointer;
+      }
+      .menu {
+        position: fixed;
+        inset: 0;
+        z-index: 110;
+        display: grid;
+        place-items: center;
+      }
+      .menu[hidden] {
+        display: none;
+      }
+      .menu nav {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.12em;
+        font-size: clamp(56px, 9vw, 96px);
+      }
+      .menu nav a {
+        color: #6d6d6a;
+        transition: color 0.2s;
+      }
+      .menu nav a:hover,
+      .menu nav a:focus-visible {
+        color: var(--paper);
+      }
+      .menu-ig {
+        position: absolute;
+        left: var(--gutter);
+        bottom: 24px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #8c8c88;
+      }
+      :global(body.menu-open) {
+        overflow: hidden;
+      }
+
+      .site-footer {
+        padding: 0 var(--gutter) 20px;
+      }
+      .footer-hero {
+        min-height: 72vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 40px;
+        text-align: center;
+        padding-top: 80px;
+      }
+      .footer-name {
+        font-size: clamp(56px, 13.2vw, 210px);
+        white-space: nowrap;
+      }
+      .footer-line {
+        text-align: center;
+        text-transform: uppercase;
+        font-weight: 500;
+        font-size: clamp(13px, 1.1vw, 16px);
+        margin: 40px 0 48px;
+      }
+      .footer-bar {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 16px;
+        font-weight: 500;
+      }
+      .footer-bar span {
+        text-align: right;
+      }
+      .footer-bar a:hover {
+        color: var(--accent);
+      }
+
+      .cursor {
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 300;
+        pointer-events: none;
+        width: 0;
+        height: 0;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+      .cursor.on {
+        opacity: 1;
+      }
+      .cursor span {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 10px;
+        height: 10px;
+        margin: -5px 0 0 -5px;
+        border-radius: 50%;
+        background: var(--accent);
+        color: transparent;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        display: grid;
+        place-items: center;
+        transition: width 0.3s, height 0.3s, margin 0.3s, color 0.2s;
+      }
+      .cursor.view span {
+        width: 64px;
+        height: 64px;
+        margin: -32px 0 0 -32px;
+        color: #fff;
+      }
+    </style>
   </body>
 </html>

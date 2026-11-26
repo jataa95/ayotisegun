@@ -2,211 +2,379 @@
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import WorkCard from '../components/WorkCard.astro';
-import { site } from '../site';
-import streetDetail from '../assets/works/street-detail.jpg';
+import Marquee from '../components/Marquee.astro';
+import Contact from '../components/Contact.astro';
+import { site, fitWidth } from '../site';
+import aboutImage from '../assets/works/riders-2026-detail-1.jpg';
 
-const works = (await getCollection('works', ({ data }) => data.featured)).sort(
-  (a, b) => a.data.order - b.data.order,
-);
+// Small crops scattered around the name. x/y are % positions, w is width in vw, depth drives the mouse parallax.
+const tileFiles = import.meta.glob<{ default: ImageMetadata }>('../assets/tiles/*.jpg', { eager: true });
+const tile = (name: string) => tileFiles[`../assets/tiles/${name}.jpg`].default;
+const tiles = [
+  { img: 'dusk-heads', x: 18, y: 4, w: 10.1, depth: 18, href: '/work/riders-at-dusk', mobile: true },
+  { img: 'grey-texture', x: 4.5, y: 14, w: 7.8, depth: 10, href: '/work/riders-in-grey', mobile: true },
+  { img: 'street-roof', x: 36, y: 0, w: 10.1, depth: 26, href: '/work', mobile: false },
+  { img: 'signature', x: 57, y: 3, w: 5.4, depth: 14, href: '/work/riders-at-dusk', mobile: false },
+  { img: 'grey-heads', x: 79, y: 10, w: 7.0, depth: 22, href: '/work/riders-in-grey', mobile: true },
+  { img: 'dusk-ground', x: 0, y: 30, w: 5.4, depth: 8, href: '/work/riders-at-dusk', mobile: true },
+  { img: 'street-figure', x: 87, y: 55, w: 6.2, depth: 16, href: '/work', mobile: true },
+  { img: 'dusk-legs', x: 11, y: 68, w: 10.1, depth: 24, href: '/work/riders-at-dusk', mobile: true },
+  { img: 'grey-legs', x: 82, y: 89, w: 6.2, depth: 12, href: '/work/riders-in-grey', mobile: false },
+  { img: 'dusk-robe', x: 95, y: 87, w: 4.7, depth: 20, href: '/work/riders-at-dusk', mobile: true },
+];
+
+const works = (await getCollection('works', ({ data }) => data.featured)).sort((a, b) => a.data.order - b.data.order);
+const steps = [
+  {
+    title: 'Conversation',
+    text: 'Every commission starts with a message. You share the person, place or moment, and where the painting will live.',
+  },
+  {
+    title: 'Study',
+    text: 'Sketches and small colour studies settle the composition, palette and size before the full canvas begins.',
+  },
+  {
+    title: 'Painting',
+    text: 'Paint is built up layer by layer with the palette knife into thick, sculpted impasto. Progress is shared along the way.',
+  },
+  {
+    title: 'Delivery',
+    text: 'Once fully dry, the signed painting is photographed, carefully packed and delivered anywhere in Nigeria.',
+  },
+];
 ---
 
 <Base image="/media/hero-poster.jpg">
-  <section class="hero">
-    <div class="hero-text">
-      <p class="eyebrow">{site.role} · {site.location}</p>
-      <h1>Ayotisegun</h1>
-      <p class="lede">{site.tagline}</p>
-      <div class="actions">
-        <a class="button solid" href="/works">View the work</a>
-        <a class="button" href="/commissions">Commission a piece</a>
-      </div>
-    </div>
-    <figure class="hero-media">
-      <video
-        src="/media/hero.mp4"
-        poster="/media/hero-poster.jpg"
-        autoplay
-        muted
-        loop
-        playsinline
-        preload="metadata"
-        aria-label="Slow pan across the textured surface of the painting Riders at Dusk"
-      ></video>
-      <figcaption class="muted small">Riders at Dusk, 2026 — detail</figcaption>
-    </figure>
+  <section class="hero" data-hero>
+    {
+      tiles.map((t) => (
+        <a
+          href={t.href}
+          class:list={['tile', { 'hide-mobile': !t.mobile }]}
+          style={`--x:${t.x}%;--y:${t.y}%;--w:${t.w}vw;`}
+          data-depth={t.depth}
+          data-cursor="view"
+          tabindex="-1"
+          aria-hidden="true"
+        >
+          <Image src={tile(t.img)} alt="" widths={[160, 320]} sizes="12vw" loading="eager" />
+        </a>
+      ))
+    }
+    <a href="/work/riders-at-dusk" class="tile tile-video" data-depth="30" data-cursor="view" tabindex="-1" aria-hidden="true">
+      <video src="/media/hero.mp4" poster="/media/hero-poster.jpg" autoplay muted loop playsinline preload="metadata"></video>
+    </a>
+
+    <h1 class="display hero-name">{site.name}</h1>
+    <p class="hero-line">{site.role} — vibrant stories of everyday life, {site.location}</p>
+    <a href={site.instagram} class="hero-ig small" target="_blank" rel="noopener">{site.instagramHandle}</a>
   </section>
 
-  <section class="section statement">
-    <div class="wrap">
-      <p class="eyebrow reveal">The practice</p>
-      <p class="big reveal">
-        Paint laid on thick with the knife, so every stroke <em>stands off the canvas</em> — people, horses
-        and streets built from light, colour and texture you can almost touch.
+  <Marquee items={['Impasto', 'Commissions open', 'Riders', 'City streets', 'Palette knife', 'Nationwide']} />
+
+  <section class="wrap statement labelled">
+    <p class="label">(About)</p>
+    <p class="headline reveal">
+      Thick, sculpted paintings of everyday life: the people, horses and busy streets that carry the beauty and resilience
+      of Nigeria, built up with the palette knife until the paint stands off the canvas.
+    </p>
+  </section>
+
+  <section class="wrap about">
+    <div class="about-img reveal">
+      <Image src={aboutImage} alt="Close-up of Riders in Grey showing the raised palette-knife texture." widths={[500, 900]} sizes="(min-width: 900px) 28vw, 100vw" />
+    </div>
+    <div class="about-text">
+      <p>
+        {site.fullName}, known as Ayotisegun, is an impasto painter whose textured layers and heavy brushwork bring emotion
+        to life. His journey began in secondary school, driven by a love of art that has only grown stronger.
       </p>
-    </div>
-  </section>
-
-  <section class="section works">
-    <div class="wrap">
-      <div class="section-head">
-        <h2 class="reveal">Selected works</h2>
-        <a class="arrow-link" href="/works">All works <span aria-hidden="true">→</span></a>
-      </div>
-      <div class="grid">
-        {works.map((work, i) => <div class={`cell cell-${i % 2}`}><WorkCard work={work} /></div>)}
-      </div>
-    </div>
-  </section>
-
-  <section class="texture">
-    <Image
-      src={streetDetail}
-      alt="Close-up of an impasto street scene: thick ridges of orange, violet and cream paint with small figures walking beneath a building."
-      widths={[800, 1400, 2000]}
-      sizes="100vw"
-    />
-    <div class="texture-caption wrap">
-      <p class="eyebrow">Impasto</p>
-      <h2>Up close, the paint becomes landscape.</h2>
-    </div>
-  </section>
-
-  <section class="section cta">
-    <div class="wrap cta-inner reveal">
-      <p class="eyebrow">Open for commissions nationwide</p>
-      <h2>Have a moment worth painting?</h2>
-      <p class="muted">
-        Portraits, family scenes, places that matter to you, or a statement piece for a home, office or hotel.
+      <p>
+        His canvases capture the beauty, innocence and stories of people, especially children, alongside riders, markets
+        and the everyday rhythm of the city.
       </p>
-      <a class="button solid" href="/commissions">Start a commission</a>
+      <a href="/info" class="link">More about Ayotisegun →</a>
     </div>
   </section>
+
+  <section class="wrap featured">
+    <div class="featured-head small">
+      <span class="label">(Featured works)</span>
+      <a href="/work" class="link">All work</a>
+    </div>
+
+    {
+      works.map((work, i) => (
+        <a href={`/work/${work.id}`} class:list={['feature', { flip: i % 2 === 1 }]} data-cursor="view">
+          <div class="panel feature-panel reveal">
+            <Image src={work.data.image} alt={work.data.alt} style={`width:${fitWidth(work.data.image, 5 / 4, 0.84)}`} widths={[500, 900, 1300]} sizes="(min-width: 900px) 50vw, 100vw" />
+          </div>
+          <div class="feature-text">
+            <p class="label">Index No. {i + 1}</p>
+            <h2 class="display">{work.data.title}</h2>
+            {work.data.statement && <p class="headline feature-statement">{work.data.statement}</p>}
+            <span class="link">View the painting →</span>
+          </div>
+        </a>
+      ))
+    }
+  </section>
+
+  <section class="process dark wrap">
+    <div class="labelled">
+      <p class="label">(How it works)</p>
+      <h2 class="display process-title">From a story to the canvas</h2>
+    </div>
+    <ol class="steps">
+      {
+        steps.map((s, i) => (
+          <li class="reveal">
+            <span class="label">{String(i + 1).padStart(2, '0')}</span>
+            <h3>{s.title}</h3>
+            <p class="muted">{s.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <Marquee items={['Commissions open', 'Portraits', 'Riders', 'Streets', 'Exhibitions']} tone="accent" />
+
+  <Contact />
 </Base>
+
+<script>
+  // Gentle parallax on the hero tiles, following the mouse.
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  if (hero && matchMedia('(pointer: fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const tiles = [...hero.querySelectorAll<HTMLElement>('[data-depth]')];
+    let tx = 0, ty = 0, cx = 0, cy = 0;
+    hero.addEventListener('mousemove', (e) => {
+      tx = e.clientX / innerWidth - 0.5;
+      ty = e.clientY / innerHeight - 0.5;
+    });
+    const tick = () => {
+      cx += (tx - cx) * 0.06;
+      cy += (ty - cy) * 0.06;
+      for (const t of tiles) {
+        const d = Number(t.dataset.depth);
+        t.style.translate = `${-cx * d * 2}px ${-cy * d * 2}px`;
+      }
+      requestAnimationFrame(tick);
+    };
+    tick();
+  }
+</script>
 
 <style>
   .hero {
+    position: relative;
+    height: 100svh;
+    min-height: 560px;
+    overflow: hidden;
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 40px;
-    padding: 120px var(--gutter) 40px;
-    max-width: var(--max);
-    margin: 0 auto;
-    min-height: 100svh;
-    align-items: center;
+    place-items: center;
   }
-  @media (min-width: 900px) {
-    .hero {
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: clamp(40px, 6vw, 96px);
-      padding-top: 110px;
-    }
+  .tile {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: max(var(--w), 84px);
+    transition: translate 0.1s linear;
+    z-index: 1;
   }
-  .hero h1 {
-    font-size: clamp(64px, 13vw, 184px);
-    margin: 20px 0 28px;
-    letter-spacing: -0.03em;
-  }
-  .lede {
-    font-size: clamp(18px, 1.6vw, 21px);
-    max-width: 30ch;
-    color: #d8cfc3;
-  }
-  .actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 36px;
-  }
-  .hero-media {
-    margin: 0;
-  }
-  .hero-media video {
+  .tile :global(img),
+  .tile video {
     width: 100%;
+    height: auto;
+    transition: transform 0.4s;
+  }
+  .tile:hover :global(img),
+  .tile:hover video {
+    transform: scale(1.06);
+  }
+  .tile-video {
+    left: 44%;
+    top: 74%;
+    width: max(9.5vw, 110px);
+    z-index: 3;
+  }
+  .tile-video video {
     aspect-ratio: 4 / 5;
     object-fit: cover;
-    background: var(--bg-raised);
   }
-  @media (min-width: 900px) {
-    .hero-media video {
-      max-height: calc(100svh - 170px);
+  .hero-name {
+    position: relative;
+    z-index: 2;
+    font-size: clamp(64px, 11.5vw, 190px);
+    text-align: center;
+    padding: 0 var(--gutter);
+    pointer-events: none;
+  }
+  .hero-line {
+    position: absolute;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+    width: min(90%, 640px);
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 500;
+    font-size: clamp(12px, 1vw, 14px);
+    mix-blend-mode: difference;
+    color: #fff;
+  }
+  .hero-ig {
+    position: absolute;
+    left: var(--gutter);
+    bottom: 22px;
+    z-index: 4;
+    font-weight: 500;
+  }
+  @media (max-width: 760px) {
+    .hide-mobile {
+      display: none;
+    }
+    .hero-name {
+      font-size: 15.2vw;
+    }
+    .hero-ig {
+      display: none;
+    }
+    .hero-line {
+      bottom: 28px;
+    }
+    .tile-video {
+      left: 52%;
+      top: 58%;
     }
   }
-  .hero-media figcaption {
-    margin-top: 12px;
+
+  .statement {
+    padding-top: clamp(80px, 11vw, 150px);
+    padding-bottom: clamp(80px, 11vw, 150px);
+  }
+  .statement .headline {
+    font-size: clamp(26px, 3.1vw, 44px);
+    max-width: 30ch;
   }
 
-  .statement .big {
-    font-family: var(--serif);
-    font-size: clamp(32px, 5vw, 68px);
-    line-height: 1.08;
-    max-width: 22ch;
-    margin-top: 24px;
+  .about {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding-bottom: clamp(80px, 10vw, 140px);
   }
-  .statement em {
+  @media (min-width: 900px) {
+    .about {
+      grid-template-columns: 1fr 2fr 2fr;
+      gap: var(--gutter);
+    }
+    .about-img {
+      grid-column: 2;
+    }
+  }
+  .about-img :global(img) {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+  .about-text {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 48ch;
+    align-items: flex-start;
+  }
+
+  .featured {
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+    padding-bottom: clamp(80px, 10vw, 140px);
+  }
+  .featured-head {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: clamp(32px, 5vw, 64px);
+  }
+  .feature {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-bottom: clamp(56px, 8vw, 120px);
+  }
+  @media (min-width: 900px) {
+    .feature {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--gutter);
+      align-items: start;
+    }
+    .feature.flip .feature-panel {
+      order: 2;
+    }
+  }
+  .feature-panel {
+    aspect-ratio: 5 / 4;
+    padding: 0;
+  }
+  .feature-text {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .feature-text h2 {
+    font-size: clamp(48px, 6.5vw, 104px);
+    margin-bottom: 8px;
+  }
+  .feature-statement {
+    font-size: clamp(15px, 1.2vw, 18px);
+    max-width: 40ch;
+  }
+  .feature:hover .link {
     color: var(--accent);
   }
 
-  .section-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: end;
-    gap: 16px;
-    margin-bottom: clamp(36px, 5vw, 64px);
+  .process {
+    padding-top: clamp(80px, 10vw, 140px);
+    padding-bottom: clamp(80px, 10vw, 140px);
   }
-  .section-head h2 {
-    font-size: clamp(42px, 6vw, 84px);
+  .process-title {
+    font-size: clamp(48px, 6.5vw, 104px);
+    max-width: 10ch;
   }
-  .grid {
+  .steps {
+    list-style: none;
+    padding: 0;
+    margin: clamp(48px, 6vw, 96px) 0 0;
     display: grid;
     grid-template-columns: 1fr;
-    gap: 72px;
+    gap: 40px var(--gutter);
+  }
+  @media (min-width: 700px) {
+    .steps {
+      grid-template-columns: 1fr 1fr;
+    }
   }
   @media (min-width: 900px) {
-    .grid {
-      grid-template-columns: 1fr 1fr;
-      gap: 0 clamp(40px, 6vw, 96px);
-    }
-    .cell-1 {
-      margin-top: 180px;
+    .steps {
+      margin-left: calc(25% + var(--gutter) / 4);
     }
   }
-
-  .texture {
-    position: relative;
+  .steps li {
+    border-top: 1px solid var(--ink-line);
+    padding-top: 16px;
+    max-width: 44ch;
   }
-  .texture :global(img) {
-    width: 100%;
-    height: clamp(420px, 80vh, 900px);
-    object-fit: cover;
+  .steps h3 {
+    font-size: clamp(20px, 1.8vw, 26px);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    margin: 12px 0 10px;
   }
-  .texture-caption {
-    position: absolute;
-    inset: auto 0 0 0;
-    padding-bottom: clamp(32px, 6vw, 72px);
-    padding-top: 120px;
-    max-width: none;
-    background: linear-gradient(to top, rgba(15, 13, 11, 0.85), rgba(15, 13, 11, 0));
-  }
-  .texture-caption h2 {
-    font-size: clamp(36px, 6vw, 80px);
-    max-width: 16ch;
-    margin-top: 12px;
-  }
-
-  .cta-inner {
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-  }
-  .cta h2 {
-    font-size: clamp(44px, 7vw, 100px);
-    margin: 16px 0 12px;
-  }
-  .cta .muted {
-    max-width: 46ch;
-    margin-bottom: 28px;
+  .steps p {
+    font-size: 14px;
   }
 </style>

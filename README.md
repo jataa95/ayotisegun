@@ -13,18 +13,26 @@ npm run build    # production build in dist/
 
 ## Pages
 
+Design: white, editorial layout with huge bold Inter type, inspired by the reference site supplied by the client.
+
 | Page | File |
 |---|---|
-| Home (video hero, statement, selected works, commissions CTA) | `src/pages/index.astro` |
-| Works grid | `src/pages/works/index.astro` |
-| Single artwork | `src/pages/works/[slug].astro` |
-| About | `src/pages/about.astro` |
-| Commissions + contact | `src/pages/commissions.astro` |
+| Home: name with floating artwork tiles, banners, about, featured works, process, contact form | `src/pages/index.astro` |
+| Work grid | `src/pages/work/index.astro` |
+| Single artwork | `src/pages/work/[slug].astro` |
+| Info (about the artist) | `src/pages/info.astro` |
+| Contact form (shared) | `src/components/Contact.astro` |
+
+The hero tiles are small crops in `src/assets/tiles/`; their positions are set in the `tiles` list at the top of
+`src/pages/index.astro`.
+
+The contact form has no server: it opens WhatsApp with the message filled in if `whatsapp` is set in `src/site.ts`,
+otherwise an email if `email` is set, otherwise it copies the message and opens Instagram.
 
 ## Common edits
 
 **Contact details**: edit `src/site.ts`. Add `email`, `whatsapp` and `youtube` there; empty
-values are hidden, and the "Enquire" button uses WhatsApp, then email, then Instagram.
+values are hidden, and the contact form and "Ask about this work" links use WhatsApp, then email, then Instagram.
 
 **Add a painting**
 1. Put the photo in `src/assets/works/` (e.g. `market-day.jpg`).
@@ -39,6 +47,8 @@ values are hidden, and the "Enquire" button uses WhatsApp, then email, then Inst
    image: ../../assets/works/market-day.jpg
    alt: Describe what is in the painting for screen readers.
    status: available        # available | sold | commission | private
+   theme: Markets, women     # short theme line
+   statement: One sentence about the painting, shown in capitals.
    featured: true           # show on the home page
    order: 3                 # position on the home page
    ---

@@ -7,7 +7,9 @@ const works = defineCollection({
     z.object({
       title: z.string(),
       year: z.number(),
-      medium: z.string().default('Oil on canvas (impasto)'),
+      medium: z.string().default('Oil on canvas, impasto'),
+      theme: z.string().optional(),
+      statement: z.string().optional(),
       dimensions: z.string().optional(),
       image: image(),
       alt: z.string(),
